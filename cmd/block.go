@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/spf13/cobra"
 )
@@ -40,6 +41,11 @@ func block(source string) {
 	resp, err := cl.Post("/sources/"+source+"/block.json", nil)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK || resp.StatusCode != http.StatusCreated {
+		fmt.Printf("Error: Response Status: %v\n", resp.Status)
 		return
 	}
 

@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/spf13/cobra"
 )
@@ -39,6 +40,11 @@ func unblock(source string) {
 	resp, err := cl.Del("/sources/" + source + "/block.json")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Error: Response Status: %v\n", resp.Status)
 		return
 	}
 

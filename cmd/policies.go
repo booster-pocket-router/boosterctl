@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/booster-proj/booster.cli/client"
@@ -36,6 +37,11 @@ Outputs the error returned if any.`,
 		resp, err := cl.Get("/policies.json", nil)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			fmt.Printf("Error: Response Status: %v\n", resp.Status)
 			return
 		}
 
