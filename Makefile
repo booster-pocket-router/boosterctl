@@ -24,14 +24,6 @@ cli:
 clean:
 	$Q rm -rf $(CURDIR)/bin
 
-.PHONY: test
-test:
-	$Q go test $(allpackages)
-
 .PHONY: format
 format:
 	$Q gofmt -s -w $(gofiles)
-
-.PHONY: release
-release:
-	$Q sh scripts/release.sh
