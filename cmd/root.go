@@ -22,7 +22,6 @@ import (
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -53,8 +52,6 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -62,11 +59,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&port, "api.port", "7764", "target booster listening `port`")
 
 	initClient() // has to run only once
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	viper.AutomaticEnv() // read in environment variables that match
 }
 
 func initClient() {
