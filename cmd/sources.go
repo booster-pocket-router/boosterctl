@@ -29,6 +29,8 @@ var sourcesCmd = &cobra.Command{
 	Short: "Show the current list of sources",
 	Long: `Perform an HTTP request to "/sources.json" and prints the raw
 JSON returned by the API, fixing indentation for improved readability.
+The content returned contains information about the list of sources that booster
+is currenlty using or observing.
 Outputs the error returned if any.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		resp, err := cl.Get("/sources.json", nil)
