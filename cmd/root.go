@@ -34,12 +34,10 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "booster.cli",
 	Short: "CLI client for booster",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `Allows to communicate to a booster server using its HTTP API.
+Check https://github.com/booster-proj/booster to discover in detail which routes will be
+involved. Through this program it is possible to list booster's sources & policies, block/unblock
+specific sources and query the metrics collected using Prometheus's query language.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
