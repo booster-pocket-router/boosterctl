@@ -17,6 +17,13 @@ package main
 
 import "github.com/booster-proj/booster.cli/cmd"
 
+// Version and BuildTime are filled in during build by the Makefile
+var (
+	version   = "N/A"
+	commit    = "N/A"
+	buildTime = "N/A"
+)
+
 func main() {
 	cmd.Execute()
 }
