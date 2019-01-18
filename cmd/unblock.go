@@ -36,7 +36,7 @@ Outputs the errors returned if any.`,
 }
 
 func unblock(source string) {
-	resp, err := cl.Del("/sources/"+source+"/block.json")
+	resp, err := cl.Del("/sources/" + source + "/block.json")
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return
