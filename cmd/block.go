@@ -44,7 +44,7 @@ func block(source string) {
 		return
 	}
 
-	if resp.StatusCode != http.StatusOK || resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusCreated {
 		fmt.Printf("Error: Response Status: %v\n", resp.Status)
 		return
 	}
