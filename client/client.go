@@ -30,7 +30,7 @@ type Client struct {
 }
 
 func New(addr string) (*Client, error) {
-	URL, err := url.Parse(addr)
+	URL, err := url.Parse("http://" + addr)
 	if err != nil {
 		return nil, err
 	}
