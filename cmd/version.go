@@ -30,7 +30,7 @@ var (
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "print program's version and build time information",
+	Short: "Print program's version and build time information",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("version: %s, commit: %s, built at: %s\n", Version, Commit, BuildTime)
 	},

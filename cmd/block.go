@@ -16,25 +16,47 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-// getCmd represents the get command
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Fetch a resource",
+// blockCmd represents the block command
+var blockCmd = &cobra.Command{
+	Use:   "block",
+	Short: "Make booster block the sources specified",
+	Long: `Perform an HTTP request to "/block.json" for each source specified, making
+booster add a block policy on it, i.e. the source will no longer be used.
+Outputs the errors returned if any.`,
+	Args: cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		for _, v := range args {
+			block(v)
+		}
+	},
+}
+
+func block(source string) {
+	resp, err := cl.Post("/sources/"+source+"/block.json", nil)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	defer resp.Body.Close()
+	fmt.Printf("Blocked: %s\n", source)
 }
 
 func init() {
-	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(blockCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// blockCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// blockCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
