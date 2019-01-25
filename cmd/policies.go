@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 
@@ -34,6 +35,12 @@ The content returned contains information about the list of policies that booste
 is currenlty using.
 Outputs the error returned if any.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		cl, err := client.New(net.JoinHostPort(host, port))
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
 		resp, err := cl.Get("/policies.json", nil)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)

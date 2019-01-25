@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 
+	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
 )
 
@@ -38,6 +40,12 @@ Outputs the errors returned if any.`,
 }
 
 func block(source string) {
+	cl, err := client.New(net.JoinHostPort(host, port))
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
 	resp, err := cl.Post("/sources/"+source+"/block.json", nil)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)

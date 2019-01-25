@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -40,6 +41,12 @@ Note that these are executed as instant queries, i.e. their results refer to the
 For more: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		cl, err := client.New(net.JoinHostPort(host, port))
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
 		val := url.Values{}
 		val.Set("query", args[0])
 

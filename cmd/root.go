@@ -17,17 +17,14 @@ package cmd
 
 import (
 	"fmt"
-	"net"
 	"os"
 
-	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
 )
 
 var (
 	host string
 	port string
-	cl   *client.Client
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -53,18 +50,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&host, "api.host", "localhost", "target booster listening `host`, hostname or IP")
-	rootCmd.PersistentFlags().StringVar(&port, "api.port", "7764", "target booster listening `port`")
+	rootCmd.PersistentFlags().StringVar(&host, "api-host", "localhost", "target booster listening `host`, hostname or IP")
+	rootCmd.PersistentFlags().StringVar(&port, "api-port", "7764", "target booster listening `port`")
 
-	initClient() // has to run only once
-}
-
-func initClient() {
-	var err error
-
-	cl, err = client.New(net.JoinHostPort(host, port))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
