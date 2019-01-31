@@ -18,9 +18,9 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"net/http"
 	"net/url"
 	"os"
+	"io"
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
@@ -28,7 +28,7 @@ import (
 
 // metricsCmd represents the metrics command
 var metricsCmd = &cobra.Command{
-	Use:   "metrics",
+	Use:   "metrics `query`",
 	Short: "Execute `query` on the local Prometheus server, if available",
 	Long: `Perform an HTTP request to "/metrics.json" with the provided query. The request
 is forwarded to the local Prometheus server instance if available. Enclose the query into quotes
@@ -49,22 +49,14 @@ For more: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-que
 
 		val := url.Values{}
 		val.Set("query", args[0])
-
-		resp, err := cl.Get("/metrics.json", &val)
-		if err != nil {
+		status, r, err := cl.QueryMetrics(&val)
+		fmt.Printf("Status: %v\n", status)
+		if err != nil  {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("Error: Response Status: %v\n", resp.Status)
-			return
-		}
-
-		defer resp.Body.Close()
-		if err := client.PrettyJSON(resp.Body, os.Stdout); err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
+		io.Copy(os.Stderr, r)
 		// this response does not end with \n
 		fmt.Println()
 	},

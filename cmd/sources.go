@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"net/http"
+	"io"
 	"os"
 
 	"github.com/booster-proj/booster.cli/client"
@@ -41,26 +41,19 @@ Outputs the error returned if any.`,
 			return
 		}
 
-		resp, err := cl.Get("/sources.json", nil)
-		if err != nil {
+		status, r, err := cl.ListSources()
+		fmt.Printf("Status: %v\n", status)
+		if err != nil  {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("Error: Response Status: %v\n", resp.Status)
-			return
-		}
-
-		defer resp.Body.Close()
-		if err := client.PrettyJSON(resp.Body, os.Stderr); err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
+		io.Copy(os.Stderr, r)
 	},
 }
 
 func init() {
-	getCmd.AddCommand(sourcesCmd)
+	rootCmd.AddCommand(sourcesCmd)
 
 	// Here you will define your flags and configuration settings.
 

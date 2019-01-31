@@ -18,7 +18,8 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"net/http"
+	"io"
+	"os"
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
@@ -26,43 +27,35 @@ import (
 
 // blockCmd represents the block command
 var blockCmd = &cobra.Command{
-	Use:   "block",
+	Use:   "block `id`",
 	Short: "Make booster block the sources specified",
-	Long: `Perform an HTTP request to "/block.json" for each source specified, making
+	Long: `Perform an HTTP request to "/block.json" on source "id", making
 booster add a block policy on it, i.e. the source will no longer be used.
 Outputs the errors returned if any.`,
-	Args: cobra.MinimumNArgs(1),
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, v := range args {
-			block(v)
+		cl, err := client.New(net.JoinHostPort(host, port))
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
 		}
+
+		status, r, err := cl.AddPolicy("block", client.PolicyReq{
+			SourceID: args[0],
+			Issuer: issuer,
+		})
+		fmt.Printf("Status: %v\n", status)
+		if err != nil  {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		io.Copy(os.Stderr, r)
 	},
 }
 
-func block(source string) {
-	cl, err := client.New(net.JoinHostPort(host, port))
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-
-	resp, err := cl.Post("/sources/"+source+"/block.json", nil)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-
-	if resp.StatusCode != http.StatusCreated {
-		fmt.Printf("Error: Response Status: %v\n", resp.Status)
-		return
-	}
-
-	defer resp.Body.Close()
-	fmt.Printf("Blocked: %s\n", source)
-}
-
 func init() {
-	rootCmd.AddCommand(blockCmd)
+	policiesCmd.AddCommand(blockCmd)
 
 	// Here you will define your flags and configuration settings.
 

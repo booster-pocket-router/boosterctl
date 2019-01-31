@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"net/http"
+	"io"
 	"os"
 
 	"github.com/booster-proj/booster.cli/client"
@@ -29,7 +29,7 @@ import (
 var policiesCmd = &cobra.Command{
 	Use:   "policies",
 	Short: "Show the current list of sources",
-	Long: `Perform an HTTP request to "/policies.json" and prints the raw
+	Long: `Performs an HTTP request to "/policies.json" and prints the raw
 JSON returned by the API, fixing indentation for improved readability.
 The content returned contains information about the list of policies that booster
 is currenlty using.
@@ -41,26 +41,19 @@ Outputs the error returned if any.`,
 			return
 		}
 
-		resp, err := cl.Get("/policies.json", nil)
-		if err != nil {
+		status, r, err := cl.ListPolicies()
+		fmt.Printf("Status: %v\n", status)
+		if err != nil  {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
 
-		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("Error: Response Status: %v\n", resp.Status)
-			return
-		}
-
-		defer resp.Body.Close()
-		if err := client.PrettyJSON(resp.Body, os.Stderr); err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}
+		io.Copy(os.Stderr, r)
 	},
 }
 
 func init() {
-	getCmd.AddCommand(policiesCmd)
+	rootCmd.AddCommand(policiesCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -18,57 +18,49 @@ package cmd
 import (
 	"fmt"
 	"net"
-	"net/http"
+	"os"
+	"io"
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
 )
 
-// unblockCmd represents the unblock command
-var unblockCmd = &cobra.Command{
-	Use:   "unblock",
-	Short: "Make booster unblock the sources specified",
-	Long: `Perform an HTTP request to "/block.json" for each source specified, making
-booster remove a block policy on it, i.e. the source will again be used.
-Outputs the errors returned if any.`,
+// removeCmd represents the remove command
+var removeCmd = &cobra.Command{
+	Use:   "remove `id`",
+	Short: "Remove a previously defined policy",
+	Long: `Perform an HTTP request to "/policies/{id}.json" and prints the raw
+JSON returned by the API, fixing indentation for improved readability.
+Outputs the error returned if any.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, v := range args {
-			unblock(v)
+		cl, err := client.New(net.JoinHostPort(host, port))
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return
 		}
+
+		status, r, err := cl.DelPolicy(args[0])
+		fmt.Printf("Status: %v\n", status)
+		if err != nil  {
+			fmt.Printf("Error: %v\n", err)
+			return
+		}
+
+		io.Copy(os.Stderr, r)
 	},
 }
 
-func unblock(source string) {
-	cl, err := client.New(net.JoinHostPort(host, port))
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	resp, err := cl.Del("/sources/" + source + "/block.json")
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error: Response Status: %v\n", resp.Status)
-		return
-	}
-
-	defer resp.Body.Close()
-	fmt.Printf("Unblocked: %s\n", source)
-}
-
 func init() {
-	rootCmd.AddCommand(unblockCmd)
+	policiesCmd.AddCommand(removeCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// unblockCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// removeCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// unblockCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// removeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

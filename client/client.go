@@ -41,7 +41,77 @@ func New(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Get(endpoint string, query *url.Values) (*http.Response, error) {
+type PolicyReq struct {
+	SourceID string `json:"source_id"`
+	Target string `json:"target"`
+	Issuer string `json:"issuer"`
+	Reason string `json:"reason"`
+}
+
+func (c *Client) AddPolicy(name string, p PolicyReq) (string, io.Reader, error) {
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(&p); err != nil {
+		return "", nil, fmt.Errorf("client: unable to encode policy: %v", err)
+	}
+
+	resp, err := c.post("/policies/" + name + ".json", &buf)
+	if err != nil {
+		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	return c.handleResponse(resp)
+}
+
+func (c *Client) DelPolicy(id string) (string, io.Reader, error) {
+	resp, err := c.del("/policies/" + id + ".json")
+	if err != nil {
+		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	return c.handleResponse(resp)
+}
+
+func (c *Client) ListSources() (string, io.Reader, error) {
+	resp, err := c.get("/sources.json", nil)
+	if err != nil {
+		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	return c.handleResponse(resp)
+}
+
+func (c *Client) ListPolicies() (string, io.Reader, error) {
+	resp, err := c.get("/policies.json", nil)
+	if err != nil {
+		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	return c.handleResponse(resp)
+}
+
+func (c *Client) QueryMetrics(query *url.Values) (string, io.Reader, error) {
+	resp, err := c.get("/policies.json", query)
+	if err != nil {
+		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	return c.handleResponse(resp)
+}
+
+func (c *Client) handleResponse(resp *http.Response) (string, io.Reader, error) {
+	var buf bytes.Buffer
+	if err := PrettyJSON(&buf, resp.Body); err != nil {
+		return resp.Status, nil, fmt.Errorf("client: unable to format json response properly: %v", err)
+	}
+	return resp.Status, &buf, nil
+}
+
+func (c *Client) get(endpoint string, query *url.Values) (*http.Response, error) {
 	URL, err := url.Parse(c.BaseURL.String() + endpoint)
 	if err != nil {
 		return nil, err
@@ -53,28 +123,28 @@ func (c *Client) Get(endpoint string, query *url.Values) (*http.Response, error)
 	return c.httpClient.Get(URL.String())
 }
 
-func (c *Client) Post(endpoint string, body io.Reader) (*http.Response, error) {
-	return c.do("POST", endpoint)
+func (c *Client) post(endpoint string, body io.Reader) (*http.Response, error) {
+	return c.do("POST", endpoint, body)
 }
 
-func (c *Client) Del(endpoint string) (*http.Response, error) {
-	return c.do("DELETE", endpoint)
+func (c *Client) del(endpoint string) (*http.Response, error) {
+	return c.do("DELETE", endpoint, nil)
 }
 
-func (c *Client) do(method string, endpoint string) (*http.Response, error) {
+func (c *Client) do(method string, endpoint string, body io.Reader) (*http.Response, error) {
 	URL, err := url.Parse(c.BaseURL.String() + endpoint)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(method, URL.String(), nil)
+	req, err := http.NewRequest(method, URL.String(), body)
 	if err != nil {
 		return nil, err
 	}
 	return c.httpClient.Do(req)
 }
 
-func PrettyJSON(src io.Reader, dest io.Writer) error {
+func PrettyJSON(dest io.Writer, src io.Reader) error {
 	var buf bytes.Buffer
 	n, err := io.Copy(&buf, src)
 	if err != nil {
