@@ -17,8 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"net"
 	"io"
+	"net"
 	"os"
 
 	"github.com/booster-proj/booster.cli/client"
@@ -42,10 +42,10 @@ Outputs the errors returned if any.`,
 
 		status, r, err := cl.AddPolicy("block", client.PolicyReq{
 			SourceID: args[0],
-			Issuer: issuer,
+			Issuer:   issuer,
 		})
 		fmt.Printf("Status: %v\n", status)
-		if err != nil  {
+		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}

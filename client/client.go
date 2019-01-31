@@ -43,9 +43,9 @@ func New(addr string) (*Client, error) {
 
 type PolicyReq struct {
 	SourceID string `json:"source_id"`
-	Target string `json:"target"`
-	Issuer string `json:"issuer"`
-	Reason string `json:"reason"`
+	Target   string `json:"target"`
+	Issuer   string `json:"issuer"`
+	Reason   string `json:"reason"`
 }
 
 func (c *Client) AddPolicy(name string, p PolicyReq) (string, io.Reader, error) {
@@ -54,7 +54,7 @@ func (c *Client) AddPolicy(name string, p PolicyReq) (string, io.Reader, error) 
 		return "", nil, fmt.Errorf("client: unable to encode policy: %v", err)
 	}
 
-	resp, err := c.post("/policies/" + name + ".json", &buf)
+	resp, err := c.post("/policies/"+name+".json", &buf)
 	if err != nil {
 		return "", nil, fmt.Errorf("client: unable to make request: %v", err)
 	}

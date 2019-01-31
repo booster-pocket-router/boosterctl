@@ -17,10 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"net/url"
 	"os"
-	"io"
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
@@ -51,7 +51,7 @@ For more: https://prometheus.io/docs/prometheus/latest/querying/api/#instant-que
 		val.Set("query", args[0])
 		status, r, err := cl.QueryMetrics(&val)
 		fmt.Printf("Status: %v\n", status)
-		if err != nil  {
+		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
