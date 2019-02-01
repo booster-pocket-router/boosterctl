@@ -17,9 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"net"
-	"os"
 
 	"github.com/booster-proj/booster.cli/client"
 	"github.com/spf13/cobra"
@@ -40,14 +38,12 @@ Outputs the error returned if any.`,
 			return
 		}
 
-		status, r, err := cl.DelPolicy(args[0])
+		status, _, err := cl.DelPolicy(args[0])
 		fmt.Printf("Status: %v\n", status)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err)
 			return
 		}
-
-		io.Copy(os.Stderr, r)
 	},
 }
 

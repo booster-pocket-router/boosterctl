@@ -31,6 +31,7 @@ var avoidCmd = &cobra.Command{
 	Short: "Make booster avoid `source_id` for connections to `target`",
 	Long: `Perform an HTTP request to "/avoid.json", making booster add
 using source "source_id" for connections to "target".`,
+	Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		cl, err := client.New(net.JoinHostPort(host, port))
 		if err != nil {
