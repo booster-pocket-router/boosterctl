@@ -52,7 +52,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&host, "api-host", "localhost", "target booster listening `host`, hostname or IP")
-	rootCmd.PersistentFlags().StringVar(&port, "api-port", "7764", "target booster listening `port`")
+	rootCmd.PersistentFlags().StringVar(&host, "host-addr", "localhost", "target booster listening `host`, hostname or IP")
+	rootCmd.PersistentFlags().StringVar(&port, "host-port", "7764", "target booster listening `port`")
 
 }
