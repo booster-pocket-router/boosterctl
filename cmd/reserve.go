@@ -27,12 +27,12 @@ import (
 
 // reserveCmd represents the reserve command
 var reserveCmd = &cobra.Command{
-	Use:   "reserve `source_id` `target`",
-	Short: "Make booster reserve `source_id` only for connections to `target`",
+	Use:   "reserve `source_id` `hosts...`",
+	Short: "Make booster reserve `source_id` only for connections to `hosts`",
 	Long: `Perform an HTTP request to "/reserve.json", making booster reserve
-source "source_id" only for connections to "target", otherwise the other sources
+source "source_id" only for connections to the list "hosts", otherwise the other sources
 are used.`,
-	Args: cobra.ExactArgs(2),
+	Args: cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		cl, err := client.New(net.JoinHostPort(host, port))
 		if err != nil {
@@ -40,10 +40,15 @@ are used.`,
 			return
 		}
 
-		status, r, err := cl.AddPolicy("reserve", client.PolicyReq{
-			SourceID: args[0],
-			Target:   args[1],
-			Issuer:   issuer,
+		status, r, err := cl.AddPolicy("reserve", struct{
+			*client.PolicyReq
+			Hosts []string
+		}{
+			PolicyReq: &client.PolicyReq{
+				SourceID: args[0],
+				Issuer:   issuer,
+			},
+			Hosts: args[1:],
 		})
 		fmt.Printf("Status: %v\n", status)
 		if err != nil {

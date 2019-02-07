@@ -48,7 +48,7 @@ type PolicyReq struct {
 	Reason   string `json:"reason"`
 }
 
-func (c *Client) AddPolicy(name string, p PolicyReq) (string, io.Reader, error) {
+func (c *Client) AddPolicy(name string, p interface{}) (string, io.Reader, error) {
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(&p); err != nil {
 		return "", nil, fmt.Errorf("client: unable to encode policy: %v", err)
