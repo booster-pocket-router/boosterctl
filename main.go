@@ -15,7 +15,7 @@
 
 package main
 
-import "github.com/booster-proj/booster.cli/cmd"
+import "github.com/booster-proj/boosterctl/cmd"
 
 // Version and BuildTime are filled in during build by the Makefile
 var (

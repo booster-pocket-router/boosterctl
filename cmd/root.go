@@ -31,7 +31,7 @@ const issuer = "official cli"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "booster.cli",
+	Use:   "boosterctl",
 	Short: "CLI client for booster",
 	Long: `Allows to communicate to a booster server using its HTTP API.
 Check https://github.com/booster-proj/booster to discover in detail which routes will be

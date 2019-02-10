@@ -21,7 +21,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/booster-proj/booster.cli/client"
+	"github.com/booster-proj/boosterctl/client"
 	"github.com/spf13/cobra"
 )
 

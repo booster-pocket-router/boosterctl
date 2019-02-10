@@ -18,7 +18,7 @@ all: cli
 
 .PHONY: cli
 cli:
-	$Q go build $(if $V,-v) -o $(bind)/booster.cli $(VERSION_FLAGS) $(CURDIR)/main.go
+	$Q go build $(if $V,-v) -o $(bind)/boosterctl $(VERSION_FLAGS) $(CURDIR)/main.go
 
 .PHONY: clean
 clean:
